@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+    
+    php:
+        build: containers/php
+        container_name: php
+        depends_on:
+            - mysql
+        volumes:
+            - ./applications:/var/www/html
+
+    wordpress:
+        build: containers/wordpress
+        container_name: wordpress
+        depends_on:
+            - mysql
+        environment:
+            WORDPRESS_DB_PASSWORD: root
+        ports:
+            - 80:80
+        volumes:
+            - ./wpthemes:/var/www/html/wp-content/themes
+
+    mysql:
+        build: containers/mysql
+        container_name: mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+        volumes:
+            - ../.data:/var/lib/mysql
