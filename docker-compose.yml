@@ -2,30 +2,54 @@ version: '2'
 
 services:
     
-    php:
-        build: containers/php
-        container_name: php
-        depends_on:
-            - mysql
+    nginx:
+        build: ./containers/nginx
+        container_name: nginx
+        links:
+            - php-fpm
+        ports:
+            - 80-90:80-90
         volumes:
             - ./applications:/var/www/html
-
-    wordpress:
-        build: containers/wordpress
-        container_name: wordpress
+      
+    php-fpm:
+        build: containers/php-fpm
+        container_name: php-fpm
         depends_on:
             - mysql
-        environment:
-            WORDPRESS_DB_PASSWORD: root
         ports:
-            - 80:80
+            - 8086:80
         volumes:
-            - ./wpthemes:/var/www/html/wp-content/themes
+            - ./applications:/var/www/html
+   
+    #redmine:
+    #    build: containers/redmine
+    #    container_name: redmine
+    #    depends_on:
+    #        - mysql
+    #    environment:
+    #        REDMINE_DB_MYSQL: mysql
+    #        REDMINE_DB_PASSWORD: root
+    #    ports:
+    #        - 3000:3000
+
+    #wordpress:
+    #    build: containers/wordpress
+    #    container_name: wordpress
+    #    depends_on:
+    #        - mysql
+    #    environment:
+    #        WORDPRESS_DB_PASSWORD: root
+    #    ports:
+    #        - 80:80
+    #    volumes:
+    #        - ./wpthemes:/var/www/html/wp-content/themes
 
     mysql:
         build: containers/mysql
         container_name: mysql
         environment:
             MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: redmine
         volumes:
-            - ../.data:/var/lib/mysql
+            - ./.data/mysql/:/var/lib/mysql/
